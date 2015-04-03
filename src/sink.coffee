@@ -65,7 +65,7 @@ class Sink extends Adapter
       @client.connect WS_BASE + uuid
       setInterval =>
         @sink.get("poll/#{uuid}")
-      , 10000
+      , 1000
 
 exports.use = (robot) ->
   new Sink robot
