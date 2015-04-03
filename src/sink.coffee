@@ -17,7 +17,6 @@ class SinkAPI
     request url: url, method: 'GET', qs: data
 
   post: (path, data, callback) =>
-    @robot.logger.info "TOKEN: #{process.env.SINK_API_TOKEN}"
     url = SINK_API_BASE + path + "?token=#{process.env.SINK_API_TOKEN}"
     headers = { 'Content-type': 'application/json' }
     options = url: url, headers: headers, method: 'POST', body: JSON.stringify(data)
