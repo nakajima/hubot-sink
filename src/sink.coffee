@@ -33,8 +33,6 @@ class SinkAPI
 class Sink extends Adapter
   constructor: ->
     super
-
-    @client = new WebSocketClient
     @sink = new SinkAPI(@robot)
 
   send: (envelope, strings...) ->
@@ -48,30 +46,35 @@ class Sink extends Adapter
 
   run: ->
     @robot.logger.info "Run"
-    @client.on 'connect', (connection) =>
-      @emit "connected"
-      connection.on 'close', =>
-        @robot.logger.info "LOST WEBSOCKET CONNECTION. Reconnecting..."
-        @_registerWebsocket()
-
-      connection.on 'message', (message) =>
-        return unless message.type is 'utf8'
-        event = JSON.parse(message.utf8Data)
-        return unless event.type is "Message"
-
-        message = event.payload
-        message.user.room_id = message.room_id
-        user = new User(message.user.id, message.user)
-        message = new TextMessage(user, message.text, message.id)
-        @receive message
-
     @_registerWebsocket()
 
   _registerWebsocket: =>
+    if @client
+      @client.close()
+      delete @client
+
     if @interval
       clearInterval(@interval)
+
+    @client = new WebSocketClient
     @sink.registerWebsocket (uuid) =>
-      @client.close()
+      @client.on 'connect', (connection) =>
+        @emit "connected"
+
+        connection.on 'close', =>
+          @robot.logger.info "LOST WEBSOCKET CONNECTION. Reconnecting..."
+          @_registerWebsocket()
+
+        connection.on 'message', (message) =>
+          return unless message.type is 'utf8'
+          event = JSON.parse(message.utf8Data)
+          return unless event.type is "Message"
+
+          message = event.payload
+          message.user.room_id = message.room_id
+          user = new User(message.user.id, message.user)
+          message = new TextMessage(user, message.text, message.id)
+          @receive message
       @client.connect WS_BASE + uuid
       @interval = setInterval =>
         @sink.get("poll/#{uuid}")
