@@ -71,6 +71,7 @@ class Sink extends Adapter
     if @interval
       clearInterval(@interval)
     @sink.registerWebsocket (uuid) =>
+      @client.close()
       @client.connect WS_BASE + uuid
       @interval = setInterval =>
         @sink.get("poll/#{uuid}")
