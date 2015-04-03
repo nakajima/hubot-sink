@@ -68,6 +68,9 @@ class Sink extends Adapter
           @robot.logger.info e
 
         connection.on 'message', (message) =>
+          @robot.logger.info "on message"
+          @robot.logger.info @client
+          
           return unless message.type is 'utf8'
           event = JSON.parse(message.utf8Data)
           return unless event.type is "Message"
