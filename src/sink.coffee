@@ -1,8 +1,10 @@
 {Adapter, User, TextMessage} = require 'hubot'
 
 WebSocketClient = require('websocket').client
+request = require('request')
 
 WS_BASE = process.env.SINK_WS_TOKEN || 'ws://sink-ws.herokuapp.com/'
+SINK_API_BASE = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
 
 class SinkAPI
   constructor: (robot) ->
@@ -11,24 +13,23 @@ class SinkAPI
   get: (path, data) =>
     data ?= {}
     data.token = process.env.SINK_API_TOKEN
-    base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
-    @robot.http(base + path).query(data).get()
+    url = SINK_API_BASE + path
+    request url: url, method: 'GET', qs: data
 
-  post: (path, data) =>
-    data ?= {}
-    data.token = process.env.SINK_API_TOKEN
-    data = JSON.stringify(data)
-    base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
-    @robot.http(base + path).headers('Content-type': 'application/json').post(data)
+  post: (path, data, callback) =>
+    @robot.logger.info "TOKEN: #{process.env.SINK_API_TOKEN}"
+    url = SINK_API_BASE + path + "?token=#{process.env.SINK_API_TOKEN}"
+    headers = { 'Content-type': 'application/json' }
+    options = url: url, headers: headers, method: 'POST', body: JSON.stringify(data)
+    request options, callback
 
   registerWebsocket: (callback) =>
-    @post("channels")((err, resp, body) =>
+    @post "channels", {}, (err, resp, body) =>
       try
         callback JSON.parse(body).uuid
       catch
         @robot.logger.info "error registering web socket"
         @robot.logger.info body
-    )
 
 class Sink extends Adapter
   constructor: ->
@@ -65,7 +66,7 @@ class Sink extends Adapter
       @client.connect WS_BASE + uuid
       setInterval =>
         @sink.get("poll/#{uuid}")
-      , 1000
+      , 10000
 
 exports.use = (robot) ->
   new Sink robot
