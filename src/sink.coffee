@@ -63,9 +63,9 @@ class Sink extends Adapter
         connection.on 'connect', =>
           @robot.logger.info "WEBSOCKET CONNECTED"
 
-        connection.on 'close', =>
-          @robot.logger.info "LOST WEBSOCKET CONNECTION. Reconnecting..."
-          @client.connect WS_BASE + uuid
+        connection.on 'close', (e) =>
+          @robot.logger.info "LOST WEBSOCKET CONNECTION."
+          @robot.logger.info e
 
         connection.on 'message', (message) =>
           return unless message.type is 'utf8'
