@@ -8,12 +8,6 @@ class SinkAPI
   constructor: (robot) ->
     @robot = robot
 
-  poll: =>
-    data = {}
-    data.token = process.env.SINK_API_TOKEN
-    base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/'
-    @robot.http(base + 'poll').query(data).get()
-
   get: (path, data) =>
     data ?= {}
     data.token = process.env.SINK_API_TOKEN
@@ -70,7 +64,7 @@ class Sink extends Adapter
     @sink.registerWebsocket (uuid) =>
       @client.connect WS_BASE + uuid
       setInterval =>
-        @sink.poll()
+        @sink.get("poll/#{uuid}")
       , 10000
 
 exports.use = (robot) ->
