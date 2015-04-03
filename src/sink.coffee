@@ -50,6 +50,10 @@ class Sink extends Adapter
     @robot.logger.info "Run"
     @client.on 'connect', (connection) =>
       @emit "connected"
+      connection.on 'close', =>
+        @robot.logger.info "LOST WEBSOCKET CONNECTION. Reconnecting..."
+        @_registerWebsocket()
+
       connection.on 'message', (message) =>
         return unless message.type is 'utf8'
         event = JSON.parse(message.utf8Data)
@@ -61,9 +65,14 @@ class Sink extends Adapter
         message = new TextMessage(user, message.text, message.id)
         @receive message
 
+    @_registerWebsocket()
+
+  _registerWebsocket: =>
+    if @interval
+      clearInterval(@interval)
     @sink.registerWebsocket (uuid) =>
       @client.connect WS_BASE + uuid
-      setInterval =>
+      @interval = setInterval =>
         @sink.get("poll/#{uuid}")
       , 10000
 
