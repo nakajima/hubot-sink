@@ -11,14 +11,14 @@ class SinkAPI
   get: (path, data) =>
     data ?= {}
     data.token = process.env.SINK_API_TOKEN
-    base = process.env.SINK_API_URL || 'http://sink-rails.herokuapp.com/'
+    base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
     @robot.http(base + path).query(data).get()
 
   post: (path, data) =>
     data ?= {}
     data.token = process.env.SINK_API_TOKEN
     data = JSON.stringify(data)
-    base = process.env.SINK_API_URL || 'http://sink-rails.herokuapp.com/'
+    base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
     @robot.http(base + path).headers('Content-type': 'application/json').post(data)
 
   registerWebsocket: (callback) =>
