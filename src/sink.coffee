@@ -12,7 +12,7 @@ class SinkAPI
     data ?= {}
     data.token = process.env.SINK_API_TOKEN
     base = process.env.SINK_API_URL || 'http://sink-rails.herokuapp.com/'
-    @robot.http(base + path).headers('Content-type': 'application/json').query(data).get()
+    @robot.http(base + path).query(data).get()
 
   post: (path, data) =>
     data ?= {}
