@@ -50,7 +50,6 @@ class Sink extends Adapter
 
   _registerWebsocket: =>
     if @client
-      @client.close()
       delete @client
 
     if @interval
