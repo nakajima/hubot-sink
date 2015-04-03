@@ -9,7 +9,7 @@ class SinkAPI
     @robot = robot
 
   poll: =>
-    data ?= {}
+    data = {}
     data.token = process.env.SINK_API_TOKEN
     base = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/'
     @robot.http(base + 'poll').query(data).get()
