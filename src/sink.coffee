@@ -21,9 +21,13 @@ class SinkAPI
     base = process.env.SINK_API_URL || 'http://sink-rails.herokuapp.com/'
     @robot.http(base + path).headers('Content-type': 'application/json').post(data)
 
-  registerWebsocket: (callback) ->
+  registerWebsocket: (callback) =>
     @post("channels")((err, resp, body) =>
-      callback JSON.parse(body).uuid
+      try
+        callback JSON.parse(body).uuid
+      catch
+        @robot.logger.info "error registering web socket"
+        @robot.logger.info body
     )
 
 class Sink extends Adapter
