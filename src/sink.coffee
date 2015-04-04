@@ -51,6 +51,7 @@ class Sink extends Adapter
 
   run: ->
     @robot.logger.info "Run"
+    @emit "connected"
 
   _registerWebsocket: =>
     if @interval
