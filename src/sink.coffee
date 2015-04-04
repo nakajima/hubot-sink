@@ -6,6 +6,8 @@ request = require('request')
 WS_BASE = process.env.SINK_WS_TOKEN || 'ws://sink-ws.herokuapp.com/'
 SINK_API_BASE = process.env.SINK_API_URL || 'https://sink-rails.herokuapp.com/v1/'
 
+WEBSOCKET_ID_COUNTER = 0
+
 class SinkAPI
   constructor: (robot) ->
     @robot = robot
@@ -49,13 +51,14 @@ class Sink extends Adapter
     @robot.logger.info "Run"
 
   _registerWebsocket: =>
-    if @client
-      delete @client
 
     if @interval
       clearInterval(@interval)
 
+    @robot.logger.info "registering websocket"
     @client = new WebSocketClient
+    @client.__websocketID = WEBSOCKET_ID_COUNTER++
+
     @sink.registerWebsocket (uuid) =>
       @client.on 'connect', (connection) =>
         @emit "connected"
@@ -70,7 +73,7 @@ class Sink extends Adapter
           @_registerWebsocket()
 
         connection.on 'message', (message) =>
-          @robot.logger.info "on message"
+          @robot.logger.info "on message from client #{@client.__websocketID}"
 
           return unless message.type is 'utf8'
           event = JSON.parse(message.utf8Data)
@@ -82,6 +85,7 @@ class Sink extends Adapter
           message = new TextMessage(user, message.text, message.id)
           @receive message
       @client.connect WS_BASE + uuid
+
       @interval = setInterval =>
         @sink.get("poll/#{uuid}")
       , 10000

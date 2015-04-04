@@ -1,6 +1,6 @@
 {
   "name": "hubot-sink",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "A Hubot adapter for Sink Chat",
   "main": "src/sink.coffee",
   "scripts": {
