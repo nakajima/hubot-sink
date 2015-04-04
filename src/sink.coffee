@@ -81,8 +81,8 @@ class Sink extends Adapter
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
           @receive message
-      @client.connect WS_BASE + uuid
 
+      @client.connect WS_BASE + uuid
       @interval = setInterval =>
         @sink.get("poll/#{uuid}")
       , 10000
