@@ -62,8 +62,6 @@ class Sink extends Adapter
 
     @sink.registerWebsocket (uuid) =>
       @client.on 'connect', (connection) =>
-        @emit "connected"
-
         connection.on 'connect', =>
           @robot.logger.info "WEBSOCKET CONNECTED"
 
@@ -81,13 +79,6 @@ class Sink extends Adapter
 
           message = event.payload
           message.user.room_id = message.room_id
-
-          ##
-          # De-dup listeners
-          newListenersObject = {}
-          for listener in @robot.listeners
-            newListenersObject[listener.regex.toString()] = listener
-          @robot.listeners = (listener for _, listener of newListenersObject)
 
           @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
           @robot.logger.info "current listener count: #{@robot.listeners.length}"
