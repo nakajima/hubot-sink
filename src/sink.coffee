@@ -83,6 +83,7 @@ class Sink extends Adapter
           message.user.room_id = message.room_id
           @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
           @robot.logger.info "current listener count: #{@robot.listeners.length}"
+          @robot.logger.info @robot.listeners
 
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
