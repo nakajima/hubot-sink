@@ -81,9 +81,16 @@ class Sink extends Adapter
 
           message = event.payload
           message.user.room_id = message.room_id
+
+          ##
+          # De-dup listeners
+          newListenersObject = {}
+          for listener in @robot.listeners
+            newListenersObject[JSON.stringify(listener)] = listener
+          @robot.listeners = listener for _, listener of newListenersObject
+
           @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
           @robot.logger.info "current listener count: #{@robot.listeners.length}"
-          @robot.logger.info @robot.listeners
 
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
