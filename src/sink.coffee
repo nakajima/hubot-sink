@@ -39,6 +39,8 @@ class Sink extends Adapter
     @_registerWebsocket()
 
   send: (envelope, strings...) ->
+    @robot.logger.info "calling send from client #{@client.__websocketID}"
+    @robot.logger.info strings
     for string in strings
       @robot.logger.info string
       @sink.post "rooms/#{envelope.user.room_id}/messages", message: { text: string, source_guid: "hubot-#{Number(new Date())}" }
