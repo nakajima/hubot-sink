@@ -86,7 +86,7 @@ class Sink extends Adapter
           # De-dup listeners
           newListenersObject = {}
           for listener in @robot.listeners
-            newListenersObject[JSON.stringify(listener)] = listener
+            newListenersObject[listener.regex.toString()] = listener
           @robot.listeners = listener for _, listener of newListenersObject
 
           @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
