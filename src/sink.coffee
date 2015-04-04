@@ -34,6 +34,7 @@ class Sink extends Adapter
   constructor: ->
     super
     @sink = new SinkAPI(@robot)
+    @_registerWebsocket()
 
   send: (envelope, strings...) ->
     for string in strings
@@ -46,7 +47,6 @@ class Sink extends Adapter
 
   run: ->
     @robot.logger.info "Run"
-    @_registerWebsocket()
 
   _registerWebsocket: =>
     if @client
