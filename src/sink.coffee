@@ -86,6 +86,8 @@ class Sink extends Adapter
           # De-dup listeners
           newListenersObject = {}
           for listener in @robot.listeners
+            @robot.logger.info "LISTENER"
+            @robot.logger.info listener
             newListenersObject[listener.regex.toString()] = listener
           @robot.listeners = listener for _, listener of newListenersObject
 
