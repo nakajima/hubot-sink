@@ -73,7 +73,6 @@ class Sink extends Adapter
           @_registerWebsocket()
 
         connection.on 'message', (message) =>
-          @robot.logger.info "on message from client #{@client.__websocketID}"
 
           return unless message.type is 'utf8'
           event = JSON.parse(message.utf8Data)
@@ -81,6 +80,7 @@ class Sink extends Adapter
 
           message = event.payload
           message.user.room_id = message.room_id
+          @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
           @receive message
