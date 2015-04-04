@@ -53,7 +53,6 @@ class Sink extends Adapter
     @robot.logger.info "Run"
 
   _registerWebsocket: =>
-
     if @interval
       clearInterval(@interval)
 
@@ -83,6 +82,8 @@ class Sink extends Adapter
           message = event.payload
           message.user.room_id = message.room_id
           @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
+          @robot.logger.info "current listener count: #{@robot.listeners.length}"
+
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
           @receive message
