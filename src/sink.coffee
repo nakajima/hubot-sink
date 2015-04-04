@@ -39,10 +39,7 @@ class Sink extends Adapter
     @_registerWebsocket()
 
   send: (envelope, strings...) ->
-    @robot.logger.info "calling send from client #{@client.__websocketID}"
-    @robot.logger.info strings
     for string in strings
-      @robot.logger.info string
       @sink.post "rooms/#{envelope.user.room_id}/messages", message: { text: string, source_guid: "hubot-#{Number(new Date())}" }
 
   reply: (envelope, strings...) ->
@@ -80,9 +77,6 @@ class Sink extends Adapter
 
           message = event.payload
           message.user.room_id = message.room_id
-
-          @robot.logger.info "on message from client #{@client.__websocketID}: #{message.text}"
-          @robot.logger.info "current listener count: #{@robot.listeners.length}"
 
           user = new User(message.user.id, message.user)
           message = new TextMessage(user, message.text, message.id)
